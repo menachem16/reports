@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SearchableSelect } from './SearchableSelect';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   seriesData, 
   moviesData, 
@@ -9,8 +10,10 @@ import {
   issueTypes, 
   contentTypes 
 } from '@/data/contentData';
-import { AlertTriangle, CheckCircle, Rocket } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Rocket, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useGoogleSheets } from '@/hooks/useGoogleSheets';
+import { Link } from 'react-router-dom';
 
 interface FormData {
   contentType: string;
@@ -31,7 +34,7 @@ export const IssueReportForm: React.FC = () => {
   });
   
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { submitIssue, isLoading, error, isConfigured } = useGoogleSheets();
 
   const handleContentTypeChange = (contentType: string) => {
     setFormData({
@@ -47,22 +50,41 @@ export const IssueReportForm: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
+    // Build details string based on content type
+    let details = '';
+    switch (formData.contentType) {
+      case 'series':
+        details = `${formData.series}, ${formData.season}, ${formData.episode}`;
+        break;
+      case 'movie':
+        details = `${formData.movieCategory}, ${formData.movie}`;
+        break;
+      case 'channel':
+        details = `${formData.country}, ${formData.channel}`;
+        break;
+    }
+
+    const issueData = {
+      contentType: contentTypes.find(ct => ct.value === formData.contentType)?.label || formData.contentType,
+      details,
+      issueType: formData.issueType,
+      timestamp: new Date().toLocaleString('he-IL')
+    };
+
+    const success = await submitIssue(issueData);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsLoading(false);
-    setIsSubmitted(true);
-    
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        contentType: '',
-        issueType: ''
-      });
-    }, 3000);
+    if (success) {
+      setIsSubmitted(true);
+      
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({
+          contentType: '',
+          issueType: ''
+        });
+      }, 3000);
+    }
   };
 
   if (isSubmitted) {
@@ -113,8 +135,37 @@ export const IssueReportForm: React.FC = () => {
   };
 
   return (
-    <Card className="w-full max-w-md bg-gradient-card border-primary/20 shadow-space animate-float">
-      <CardHeader className="text-center">
+    <div className="w-full max-w-md space-y-4">
+      {/* Configuration Alert */}
+      {!isConfigured && (
+        <Alert className="border-yellow-500/50 bg-yellow-500/10">
+          <Settings className="h-4 w-4" />
+          <AlertDescription className="text-right">
+            <div className="flex items-center justify-between">
+              <span>Google Sheets לא מוגדר.</span>
+              <Link 
+                to="/admin" 
+                className="text-primary hover:text-primary-glow font-medium underline"
+              >
+                הגדר כעת
+              </Link>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Error Alert */}
+      {error && (
+        <Alert className="border-red-500/50 bg-red-500/10">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription className="text-right">
+            {error}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <Card className="bg-gradient-card border-primary/20 shadow-space animate-float">
+        <CardHeader className="text-center">
         <div className="flex items-center justify-center mb-4">
           <div className="p-3 bg-gradient-primary rounded-full shadow-glow">
             <AlertTriangle className="w-6 h-6 text-primary-foreground" />
@@ -287,5 +338,6 @@ export const IssueReportForm: React.FC = () => {
         </form>
       </CardContent>
     </Card>
+    </div>
   );
 };
