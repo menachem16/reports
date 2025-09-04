@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 interface GoogleSheetsConfig {
   spreadsheetId: string;
@@ -116,7 +116,7 @@ export const useGoogleSheets = () => {
     }
   };
 
-  const readMovies = async (): Promise<{[key: string]: string[]} | null> => {
+  const readMovies = useCallback(async (): Promise<{[key: string]: string[]} | null> => {
     const data = await readData('movies');
     if (!data || data.length < 2) return null;
     
@@ -135,9 +135,9 @@ export const useGoogleSheets = () => {
     }
     
     return result;
-  };
+  }, []);
 
-  const readSeries = async (): Promise<{[key: string]: {seasons: string[], episodes: {[key: string]: string[]}}} | null> => {
+  const readSeries = useCallback(async (): Promise<{[key: string]: {seasons: string[], episodes: {[key: string]: string[]}}} | null> => {
     const data = await readData('series');
     if (!data || data.length < 2) return null;
     
@@ -169,9 +169,9 @@ export const useGoogleSheets = () => {
     }
     
     return result;
-  };
+  }, []);
 
-  const readChannels = async (): Promise<{[key: string]: string[]} | null> => {
+  const readChannels = useCallback(async (): Promise<{[key: string]: string[]} | null> => {
     const data = await readData('channels');
     if (!data || data.length < 2) return null;
     
@@ -189,7 +189,7 @@ export const useGoogleSheets = () => {
     }
     
     return result;
-  };
+  }, []);
 
   return {
     submitIssue,

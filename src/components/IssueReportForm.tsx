@@ -56,7 +56,7 @@ export const IssueReportForm: React.FC = () => {
     };
     
     loadData();
-  }, [isConfigured, readMovies, readSeries, readChannels]);
+  }, [isConfigured]);
 
   const handleContentTypeChange = (contentType: string) => {
     setFormData({
