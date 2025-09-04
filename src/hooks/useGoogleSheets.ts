@@ -121,16 +121,15 @@ export const useGoogleSheets = () => {
     if (!data || data.length < 2) return null;
     
     const result: {[key: string]: string[]} = {};
-    const headers = data[0];
     
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      const category = row[0];
-      const movie = row[1];
+      const category = row[0]; // קטגוריה
+      const movie = row[1];    // סרט
       
       if (category && movie) {
         if (!result[category]) result[category] = [];
-        result[category].push(movie);
+        if (!result[category].includes(movie)) result[category].push(movie);
       }
     }
     
@@ -145,9 +144,9 @@ export const useGoogleSheets = () => {
     
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      const series = row[0];
-      const season = row[1];
-      const episode = row[2];
+      const series = row[0];  // סדרה
+      const season = row[1];  // עונה
+      const episode = row[2]; // פרק
       
       if (series && season && episode) {
         if (!result[series]) {
@@ -179,12 +178,12 @@ export const useGoogleSheets = () => {
     
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      const country = row[0];
-      const channel = row[1];
+      const country = row[0];  // מדינה
+      const channel = row[1];  // ערוץ
       
       if (country && channel) {
         if (!result[country]) result[country] = [];
-        result[country].push(channel);
+        if (!result[country].includes(channel)) result[country].push(channel);
       }
     }
     
