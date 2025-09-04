@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SearchableSelect } from './SearchableSelect';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
-  seriesData, 
-  moviesData, 
-  channelsData, 
   issueTypes, 
   contentTypes 
 } from '@/data/contentData';
@@ -34,7 +31,32 @@ export const IssueReportForm: React.FC = () => {
   });
   
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const { submitIssue, isLoading, error, isConfigured } = useGoogleSheets();
+  const [seriesData, setSeriesData] = useState<{[key: string]: {seasons: string[], episodes: {[key: string]: string[]}}} | null>(null);
+  const [moviesData, setMoviesData] = useState<{[key: string]: string[]} | null>(null);
+  const [channelsData, setChannelsData] = useState<{[key: string]: string[]} | null>(null);
+  const { submitIssue, readMovies, readSeries, readChannels, isLoading, error, isConfigured } = useGoogleSheets();
+
+  useEffect(() => {
+    const loadData = async () => {
+      if (isConfigured) {
+        try {
+          const [movies, series, channels] = await Promise.all([
+            readMovies(),
+            readSeries(),
+            readChannels()
+          ]);
+          
+          setMoviesData(movies);
+          setSeriesData(series);
+          setChannelsData(channels);
+        } catch (err) {
+          console.error('Error loading data from sheets:', err);
+        }
+      }
+    };
+    
+    loadData();
+  }, [isConfigured, readMovies, readSeries, readChannels]);
 
   const handleContentTypeChange = (contentType: string) => {
     setFormData({
@@ -50,23 +72,15 @@ export const IssueReportForm: React.FC = () => {
       return;
     }
 
-    // Build details string based on content type
-    let details = '';
-    switch (formData.contentType) {
-      case 'series':
-        details = `${formData.series}, ${formData.season}, ${formData.episode}`;
-        break;
-      case 'movie':
-        details = `${formData.movieCategory}, ${formData.movie}`;
-        break;
-      case 'channel':
-        details = `${formData.country}, ${formData.channel}`;
-        break;
-    }
-
     const issueData = {
       contentType: contentTypes.find(ct => ct.value === formData.contentType)?.label || formData.contentType,
-      details,
+      series: formData.series,
+      season: formData.season,
+      episode: formData.episode,
+      movieCategory: formData.movieCategory,
+      movie: formData.movie,
+      country: formData.country,
+      channel: formData.channel,
       issueType: formData.issueType,
       timestamp: new Date().toLocaleString('he-IL')
     };
@@ -103,21 +117,21 @@ export const IssueReportForm: React.FC = () => {
     );
   }
 
-  const getSeriesOptions = () => Object.keys(seriesData);
-  const getSeasonOptions = () => formData.series ? seriesData[formData.series as keyof typeof seriesData]?.seasons || [] : [];
+  const getSeriesOptions = () => seriesData ? Object.keys(seriesData) : [];
+  const getSeasonOptions = () => formData.series && seriesData ? seriesData[formData.series]?.seasons || [] : [];
   const getEpisodeOptions = () => {
-    if (formData.series && formData.season) {
-      const series = seriesData[formData.series as keyof typeof seriesData];
-      return series?.episodes[formData.season as keyof typeof series.episodes] || [];
+    if (formData.series && formData.season && seriesData) {
+      const series = seriesData[formData.series];
+      return series?.episodes[formData.season] || [];
     }
     return [];
   };
 
-  const getMovieCategoryOptions = () => Object.keys(moviesData);
-  const getMovieOptions = () => formData.movieCategory ? moviesData[formData.movieCategory as keyof typeof moviesData] || [] : [];
+  const getMovieCategoryOptions = () => moviesData ? Object.keys(moviesData) : [];
+  const getMovieOptions = () => formData.movieCategory && moviesData ? moviesData[formData.movieCategory] || [] : [];
 
-  const getCountryOptions = () => Object.keys(channelsData);
-  const getChannelOptions = () => formData.country ? channelsData[formData.country as keyof typeof channelsData] || [] : [];
+  const getCountryOptions = () => channelsData ? Object.keys(channelsData) : [];
+  const getChannelOptions = () => formData.country && channelsData ? channelsData[formData.country] || [] : [];
 
   const isFormValid = () => {
     if (!formData.contentType || !formData.issueType) return false;
