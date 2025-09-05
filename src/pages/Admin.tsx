@@ -20,7 +20,7 @@ const Admin = () => {
     spreadsheetId: '',
     webAppUrl: '',
     apiKey: '',
-    sheetName: 'דיווחי תקלות'
+    sheetName: 'sheets'
   });
   
   const [isLoading, setIsLoading] = useState(false);
@@ -167,13 +167,12 @@ const Admin = () => {
 
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-foreground text-right">
-                  שם הגיליון
+                  הערה: המערכת עובדת עם 3 גיליונות - סדרות, סרט, ערוצים
                 </label>
                 <Input
-                  value={config.sheetName}
-                  onChange={(e) => setConfig({...config, sheetName: e.target.value})}
-                  placeholder="דיווחי תקלות"
-                  className="text-right"
+                  value="סדרות, סרט, ערוצים"
+                  disabled
+                  className="text-right bg-muted"
                 />
               </div>
 
@@ -243,16 +242,27 @@ const Admin = () => {
                   <h4 className="font-semibold text-foreground mb-2">2. הוסף את הקוד:</h4>
                   <div className="bg-muted/50 p-3 rounded-md text-xs font-mono text-left" dir="ltr">
 {`function doPost(e) {
-  const sheet = SpreadsheetApp.openById('YOUR_SHEET_ID')
-    .getSheetByName('דיווחי תקלות');
-  
   const data = JSON.parse(e.postData.contents);
-  sheet.appendRow([
-    data.contentType,
-    data.details,
-    data.issueType,
-    data.timestamp
-  ]);
+  const spreadsheet = SpreadsheetApp.openById('YOUR_SHEET_ID');
+  const sheet = spreadsheet.getSheetByName(data.targetSheet);
+  
+  // Add row based on sheet type
+  if (data.targetSheet === 'סדרות') {
+    sheet.appendRow([
+      data['סוג תוכן'], data['סדרה'], data['עונה'], 
+      data['פרק'], data['סוג תקלה'], data['זמן דיווח']
+    ]);
+  } else if (data.targetSheet === 'סרט') {
+    sheet.appendRow([
+      data['סוג תוכן'], data['קטגוריה'], data['סרט'], 
+      data['סוג תקלה'], data['זמן דיווח']
+    ]);
+  } else if (data.targetSheet === 'ערוצים') {
+    sheet.appendRow([
+      data['סוג תוכן'], data['מדינה'], data['ערוץ'], 
+      data['סוג תקלה'], data['זמן דיווח']
+    ]);
+  }
   
   return ContentService
     .createTextOutput(JSON.stringify({success: true}))

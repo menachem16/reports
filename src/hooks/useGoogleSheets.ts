@@ -43,20 +43,49 @@ export const useGoogleSheets = () => {
 
       // Send data to the correct sheet based on content type
       const targetSheet = getSheetNameByContentType(issueData.contentType);
-      const dataWithSheet = {
-        ...issueData,
-        targetSheet: targetSheet
-      };
+      
+      // Format data according to sheet column structure
+      let formattedData = {};
+      
+      if (targetSheet === 'סדרות') {
+        formattedData = {
+          'סוג תוכן': issueData.contentType,
+          'סדרה': issueData.series || '',
+          'עונה': issueData.season || '',
+          'פרק': issueData.episode || '',
+          'סוג תקלה': issueData.issueType,
+          'זמן דיווח': issueData.timestamp,
+          targetSheet: targetSheet
+        };
+      } else if (targetSheet === 'סרט') {
+        formattedData = {
+          'סוג תוכן': issueData.contentType,
+          'קטגוריה': issueData.movieCategory || '',
+          'סרט': issueData.movie || '',
+          'סוג תקלה': issueData.issueType,
+          'זמן דיווח': issueData.timestamp,
+          targetSheet: targetSheet
+        };
+      } else if (targetSheet === 'ערוצים') {
+        formattedData = {
+          'סוג תוכן': issueData.contentType,
+          'מדינה': issueData.country || '',
+          'ערוץ': issueData.channel || '',
+          'סוג תקלה': issueData.issueType,
+          'זמן דיווח': issueData.timestamp,
+          targetSheet: targetSheet
+        };
+      }
 
       console.log('Sending data to sheet:', targetSheet);
-      console.log('Data being sent:', dataWithSheet);
+      console.log('Formatted data being sent:', formattedData);
 
       const response = await fetch(config.webAppUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(dataWithSheet),
+        body: JSON.stringify(formattedData),
         mode: 'no-cors' // Required for Google Apps Script
       });
 
@@ -87,8 +116,8 @@ export const useGoogleSheets = () => {
         console.log('Returning: ערוצים');
         return 'ערוצים';
       default:
-        console.log('Returning default: דיווחי תקלות');
-        return 'דיווחי תקלות';
+        console.error('Unknown content type:', contentType);
+        throw new Error(`סוג תוכן לא מזוהה: ${contentType}`);
     }
   };
 
@@ -187,22 +216,17 @@ export const useGoogleSheets = () => {
     
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      // מנסה למצוא את המבנה הנכון מהנתונים הקיימים
-      let country = '';
-      let channel = '';
-      
-      // חיפוש אחר ערוצים בפורמט הנכון
-      if (row.length >= 2 && row[0] && row[1]) {
-        // אם יש שני ערכים, נניח שהראשון הוא מדינה והשני ערוץ
-        if (row[0].length > 1 && row[1].length > 1) {
-          country = row[0];
-          channel = row[1];
+      // המבנה: עמודה 0 = סוג תוכן, עמודה 1 = מדינה, עמודה 2 = ערוץ
+      if (row.length >= 3) {
+        const country = row[1]; // מדינה
+        const channel = row[2]; // ערוץ
+        
+        if (country && channel && 
+            country !== 'מדינה' && channel !== 'ערוץ' &&
+            country.length > 1 && channel.length > 1) {
+          if (!result[country]) result[country] = [];
+          if (!result[country].includes(channel)) result[country].push(channel);
         }
-      }
-      
-      if (country && channel && country !== 'ערוץ' && channel !== 'ערוץ') {
-        if (!result[country]) result[country] = [];
-        if (!result[country].includes(channel)) result[country].push(channel);
       }
     }
     
