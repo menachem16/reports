@@ -89,14 +89,19 @@ export const useGoogleSheets = () => {
   };
 
   const getSheetNameByContentType = (contentType: string): string => {
+    console.log('getSheetNameByContentType called with:', contentType);
     switch (contentType) {
       case 'סדרה':
+        console.log('Returning: סדרות');
         return 'סדרות';
       case 'סרט':
+        console.log('Returning: סרט');
         return 'סרט';
       case 'ערוץ':
+        console.log('Returning: ערוצים');
         return 'ערוצים';
       default:
+        console.log('Returning default: דיווחי תקלות');
         return 'דיווחי תקלות';
     }
   };
