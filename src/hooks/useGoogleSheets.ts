@@ -41,18 +41,36 @@ export const useGoogleSheets = () => {
         throw new Error('הגדרות Google Sheets לא נמצאו. נא להגדיר בדף האדמין.');
       }
 
-      // Add sheet name based on content type
+      // Add sheet name based on content type and backup to דיווחי תקלות
+      const targetSheet = getSheetNameByContentType(issueData.contentType);
       const dataWithSheet = {
         ...issueData,
-        targetSheet: getSheetNameByContentType(issueData.contentType)
+        targetSheet: targetSheet
+      };
+      
+      // Also send to backup sheet דיווחי תקלות
+      const backupData = {
+        ...issueData,
+        targetSheet: 'דיווחי תקלות'
       };
 
-      const response = await fetch(config.webAppUrl, {
+      // Send to main sheet
+      const response1 = await fetch(config.webAppUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(dataWithSheet),
+        mode: 'no-cors' // Required for Google Apps Script
+      });
+
+      // Send to backup sheet דיווחי תקלות
+      const response2 = await fetch(config.webAppUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(backupData),
         mode: 'no-cors' // Required for Google Apps Script
       });
 
@@ -124,8 +142,8 @@ export const useGoogleSheets = () => {
     
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      const category = row[0]; // קטגוריה
-      const movie = row[1];    // סרט
+      const category = row[1]; // קטגוריה (עמודה 2)
+      const movie = row[2];    // סרט (עמודה 3)
       
       if (category && movie) {
         if (!result[category]) result[category] = [];
@@ -144,9 +162,9 @@ export const useGoogleSheets = () => {
     
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      const series = row[0];  // סדרה
-      const season = row[1];  // עונה
-      const episode = row[2]; // פרק
+      const series = row[1];  // סדרה (עמודה 2)
+      const season = row[2];  // עונה (עמודה 3)
+      const episode = row[3]; // פרק (עמודה 4)
       
       if (series && season && episode) {
         if (!result[series]) {
@@ -178,10 +196,20 @@ export const useGoogleSheets = () => {
     
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      const country = row[0];  // מדינה
-      const channel = row[1];  // ערוץ
+      // מנסה למצוא את המבנה הנכון מהנתונים הקיימים
+      let country = '';
+      let channel = '';
       
-      if (country && channel) {
+      // חיפוש אחר ערוצים בפורמט הנכון
+      if (row.length >= 2 && row[0] && row[1]) {
+        // אם יש שני ערכים, נניח שהראשון הוא מדינה והשני ערוץ
+        if (row[0].length > 1 && row[1].length > 1) {
+          country = row[0];
+          channel = row[1];
+        }
+      }
+      
+      if (country && channel && country !== 'ערוץ' && channel !== 'ערוץ') {
         if (!result[country]) result[country] = [];
         if (!result[country].includes(channel)) result[country].push(channel);
       }
