@@ -41,36 +41,22 @@ export const useGoogleSheets = () => {
         throw new Error('הגדרות Google Sheets לא נמצאו. נא להגדיר בדף האדמין.');
       }
 
-      // Add sheet name based on content type and backup to דיווחי תקלות
+      // Send data to the correct sheet based on content type
       const targetSheet = getSheetNameByContentType(issueData.contentType);
       const dataWithSheet = {
         ...issueData,
         targetSheet: targetSheet
       };
-      
-      // Also send to backup sheet דיווחי תקלות
-      const backupData = {
-        ...issueData,
-        targetSheet: 'דיווחי תקלות'
-      };
 
-      // Send to main sheet
-      const response1 = await fetch(config.webAppUrl, {
+      console.log('Sending data to sheet:', targetSheet);
+      console.log('Data being sent:', dataWithSheet);
+
+      const response = await fetch(config.webAppUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(dataWithSheet),
-        mode: 'no-cors' // Required for Google Apps Script
-      });
-
-      // Send to backup sheet דיווחי תקלות
-      const response2 = await fetch(config.webAppUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(backupData),
         mode: 'no-cors' // Required for Google Apps Script
       });
 
