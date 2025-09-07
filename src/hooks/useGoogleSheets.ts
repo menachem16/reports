@@ -44,37 +44,24 @@ export const useGoogleSheets = () => {
       // Send data to the correct sheet based on content type
       const targetSheet = getSheetNameByContentType(issueData.contentType);
       
-      // Format data according to sheet column structure
-      let formattedData = {};
+      // Format data with English keys as expected by Google Apps Script
+      let formattedData: any = {
+        contentType: issueData.contentType,
+        issueType: issueData.issueType,
+        timestamp: issueData.timestamp,
+        targetSheet: targetSheet
+      };
       
       if (targetSheet === 'סדרות') {
-        formattedData = {
-          'סוג תוכן': issueData.contentType,
-          'סדרה': issueData.series || '',
-          'עונה': issueData.season || '',
-          'פרק': issueData.episode || '',
-          'סוג תקלה': issueData.issueType,
-          'זמן דיווח': issueData.timestamp,
-          targetSheet: targetSheet
-        };
-      } else if (targetSheet === 'סרט') {
-        formattedData = {
-          'סוג תוכן': issueData.contentType,
-          'קטגוריה': issueData.movieCategory || '',
-          'סרט': issueData.movie || '',
-          'סוג תקלה': issueData.issueType,
-          'זמן דיווח': issueData.timestamp,
-          targetSheet: targetSheet
-        };
+        formattedData.series = issueData.series || '';
+        formattedData.season = issueData.season || '';
+        formattedData.episode = issueData.episode || '';
+      } else if (targetSheet === 'סרטים') {
+        formattedData.category = issueData.movieCategory || '';
+        formattedData.movie = issueData.movie || '';
       } else if (targetSheet === 'ערוצים') {
-        formattedData = {
-          'סוג תוכן': issueData.contentType,
-          'מדינה': issueData.country || '',
-          'ערוץ': issueData.channel || '',
-          'סוג תקלה': issueData.issueType,
-          'זמן דיווח': issueData.timestamp,
-          targetSheet: targetSheet
-        };
+        formattedData.country = issueData.country || '';
+        formattedData.channel = issueData.channel || '';
       }
 
       console.log('Sending data to sheet:', targetSheet);
@@ -110,8 +97,8 @@ export const useGoogleSheets = () => {
         console.log('Returning: סדרות');
         return 'סדרות';
       case 'סרט':
-        console.log('Returning: סרט');
-        return 'סרט';
+        console.log('Returning: סרטים');
+        return 'סרטים';
       case 'ערוץ':
         console.log('Returning: ערוצים');
         return 'ערוצים';
