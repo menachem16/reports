@@ -48,7 +48,7 @@ export const useGoogleSheets = () => {
       let formattedData: any = {
         contentType: issueData.contentType,
         issueType: issueData.issueType,
-        timestamp: issueData.timestamp,
+        timestamp: new Date().toISOString(), // Send ISO format for proper parsing in GAS
         targetSheet: targetSheet
       };
       
@@ -72,16 +72,12 @@ export const useGoogleSheets = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formattedData)
+        body: JSON.stringify(formattedData),
+        mode: 'no-cors' // Required for Google Apps Script
       });
 
-      // Try to read response to get better error handling
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const result = await response.text();
-      console.log('Response from Google Apps Script:', result);
+      // Note: With no-cors, we can't read the response
+      // We assume success if no error is thrown
       return true;
 
     } catch (err) {
