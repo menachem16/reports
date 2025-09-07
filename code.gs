@@ -15,7 +15,7 @@ function doPost(e) {
     // הוסף כותרות בהתאם לסוג התוכן
     if (sheetName === 'סדרות') {
       sheet.getRange(1, 1, 1, 6).setValues([['סוג תוכן', 'סדרה', 'עונה', 'פרק', 'סוג תקלה', 'תאריך']]);
-    } else if (sheetName === 'סרטים') {
+    } else if (sheetName === 'סרט') {
       sheet.getRange(1, 1, 1, 5).setValues([['סוג תוכן', 'קטגוריה', 'סרט', 'סוג תקלה', 'תאריך']]);
     } else if (sheetName === 'ערוצים') {
       sheet.getRange(1, 1, 1, 5).setValues([['סוג תוכן', 'מדינה', 'ערוץ', 'סוג תקלה', 'תאריך']]);
@@ -36,7 +36,7 @@ function doPost(e) {
         data.issueType,
         data.timestamp
       ];
-    } else if (sheetName === 'סרטים') {
+    } else if (sheetName === 'סרט') {
       rowData = [
         data.contentType,
         data.category || '',

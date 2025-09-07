@@ -56,7 +56,7 @@ export const useGoogleSheets = () => {
         formattedData.series = issueData.series || '';
         formattedData.season = issueData.season || '';
         formattedData.episode = issueData.episode || '';
-      } else if (targetSheet === 'סרטים') {
+      } else if (targetSheet === 'סרט') {
         formattedData.category = issueData.movieCategory || '';
         formattedData.movie = issueData.movie || '';
       } else if (targetSheet === 'ערוצים') {
@@ -97,8 +97,8 @@ export const useGoogleSheets = () => {
         console.log('Returning: סדרות');
         return 'סדרות';
       case 'סרט':
-        console.log('Returning: סרטים');
-        return 'סרטים';
+        console.log('Returning: סרט');
+        return 'סרט';
       case 'ערוץ':
         console.log('Returning: ערוצים');
         return 'ערוצים';
