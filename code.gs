@@ -12,16 +12,16 @@ function doPost(e) {
     if (!sheet) {
       sheet = spreadsheet.insertSheet(sheetName);
       
-      // הוסף כותרות בהתאם לסוג התוכן
-      if (sheetName === 'סדרות') {
-        sheet.getRange(1, 1, 1, 6).setValues([['סוג תוכן', 'סדרה', 'עונה', 'פרק', 'סוג תקלה', 'תאריך']]);
-      } else if (sheetName === 'סרט') {
-        sheet.getRange(1, 1, 1, 5).setValues([['סוג תוכן', 'קטגוריה', 'סרט', 'סוג תקלה', 'תאריך']]);
-      } else if (sheetName === 'ערוצים') {
-        sheet.getRange(1, 1, 1, 5).setValues([['סוג תוכן', 'מדינה', 'ערוץ', 'סוג תקלה', 'תאריך']]);
-      } else {
-        sheet.getRange(1, 1, 1, 4).setValues([['סוג תוכן', 'פרטים', 'סוג תקלה', 'תאריך']]);
-      }
+    // הוסף כותרות בהתאם לסוג התוכן
+    if (sheetName === 'סדרות') {
+      sheet.getRange(1, 1, 1, 6).setValues([['סוג תוכן', 'סדרה', 'עונה', 'פרק', 'סוג תקלה', 'תאריך']]);
+    } else if (sheetName === 'סרטים') {
+      sheet.getRange(1, 1, 1, 5).setValues([['סוג תוכן', 'קטגוריה', 'סרט', 'סוג תקלה', 'תאריך']]);
+    } else if (sheetName === 'ערוצים') {
+      sheet.getRange(1, 1, 1, 5).setValues([['סוג תוכן', 'מדינה', 'ערוץ', 'סוג תקלה', 'תאריך']]);
+    } else {
+      sheet.getRange(1, 1, 1, 4).setValues([['סוג תוכן', 'פרטים', 'סוג תקלה', 'תאריך']]);
+    }
     }
     
     // הוסף את הנתונים בהתאם לסוג התוכן
@@ -36,10 +36,10 @@ function doPost(e) {
         data.issueType,
         data.timestamp
       ];
-    } else if (sheetName === 'סרט') {
+    } else if (sheetName === 'סרטים') {
       rowData = [
         data.contentType,
-        data.movieCategory || '',
+        data.category || '',
         data.movie || '',
         data.issueType,
         data.timestamp
