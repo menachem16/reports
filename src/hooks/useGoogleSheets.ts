@@ -72,12 +72,16 @@ export const useGoogleSheets = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formattedData),
-        mode: 'no-cors' // Required for Google Apps Script
+        body: JSON.stringify(formattedData)
       });
 
-      // Note: With no-cors, we can't read the response
-      // We assume success if no error is thrown
+      // Try to read response to get better error handling
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.text();
+      console.log('Response from Google Apps Script:', result);
       return true;
 
     } catch (err) {
