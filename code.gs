@@ -1,27 +1,40 @@
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
+    console.log('Received data:', JSON.stringify(data));
+    
     const spreadsheetId = 'YOUR_SPREADSHEET_ID'; // החלף עם ה-ID של הגיליון שלך
     const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
     
-    // קבל את שם הגיליון המתאים
-    const sheetName = data.targetSheet || 'דיווחי תקלות';
-    let sheet = spreadsheet.getSheetByName(sheetName);
+    // קבל את שם הגיליון המתאים - ללא ברירת מחדל
+    const sheetName = data.targetSheet;
+    console.log('Target sheet name:', sheetName);
     
-    // אם הגיליון לא קיים, צור אותו
+    // בדוק שהשם תקין - רק השמות המותרים
+    const allowedSheets = ['סדרות', 'סרט', 'ערוצים'];
+    if (!sheetName || !allowedSheets.includes(sheetName)) {
+      console.error('Invalid sheet name:', sheetName);
+      return ContentService
+        .createTextOutput(JSON.stringify({success: false, error: 'Invalid sheet name: ' + sheetName}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    let sheet = spreadsheet.getSheetByName(sheetName);
+    console.log('Sheet exists:', !!sheet);
+    
+    // אם הגיליון לא קיים, צור אותו עם הכותרות המתאימות
     if (!sheet) {
+      console.log('Creating new sheet:', sheetName);
       sheet = spreadsheet.insertSheet(sheetName);
       
-    // הוסף כותרות בהתאם לסוג התוכן
-    if (sheetName === 'סדרות') {
-      sheet.getRange(1, 1, 1, 6).setValues([['סוג תוכן', 'סדרה', 'עונה', 'פרק', 'סוג תקלה', 'תאריך']]);
-    } else if (sheetName === 'סרט') {
-      sheet.getRange(1, 1, 1, 5).setValues([['סוג תוכן', 'קטגוריה', 'סרט', 'סוג תקלה', 'תאריך']]);
-    } else if (sheetName === 'ערוצים') {
-      sheet.getRange(1, 1, 1, 5).setValues([['סוג תוכן', 'מדינה', 'ערוץ', 'סוג תקלה', 'תאריך']]);
-    } else {
-      sheet.getRange(1, 1, 1, 4).setValues([['סוג תוכן', 'פרטים', 'סוג תקלה', 'תאריך']]);
-    }
+      // הוסף כותרות בהתאם לסוג התוכן
+      if (sheetName === 'סדרות') {
+        sheet.getRange(1, 1, 1, 6).setValues([['סוג תוכן', 'סדרה', 'עונה', 'פרק', 'סוג תקלה', 'תאריך']]);
+      } else if (sheetName === 'סרט') {
+        sheet.getRange(1, 1, 1, 5).setValues([['סוג תוכן', 'קטגוריה', 'סרט', 'סוג תקלה', 'תאריך']]);
+      } else if (sheetName === 'ערוצים') {
+        sheet.getRange(1, 1, 1, 5).setValues([['סוג תוכן', 'מדינה', 'ערוץ', 'סוג תקלה', 'תאריך']]);
+      }
     }
     
     // הוסף את הנתונים בהתאם לסוג התוכן
@@ -52,17 +65,11 @@ function doPost(e) {
         data.issueType,
         data.timestamp
       ];
-    } else {
-      // פורמט ישן לתאימות לאחור
-      rowData = [
-        data.contentType,
-        data.details || '',
-        data.issueType,
-        data.timestamp
-      ];
     }
     
+    console.log('Row data to append:', JSON.stringify(rowData));
     sheet.appendRow(rowData);
+    console.log('Data appended successfully to sheet:', sheetName);
     
     return ContentService
       .createTextOutput(JSON.stringify({success: true, sheet: sheetName}))

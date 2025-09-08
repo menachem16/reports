@@ -43,12 +43,14 @@ export const useGoogleSheets = () => {
 
       // Send data to the correct sheet based on content type
       const targetSheet = getSheetNameByContentType(issueData.contentType);
+      console.log('Target sheet determined:', targetSheet);
+      console.log('Original issue data received:', JSON.stringify(issueData));
       
       // Format data with English keys as expected by Google Apps Script
       let formattedData: any = {
         contentType: issueData.contentType,
         issueType: issueData.issueType,
-        timestamp: new Date().toISOString(), // Send ISO format for proper parsing in GAS
+        timestamp: new Date().toLocaleString('he-IL'),
         targetSheet: targetSheet
       };
       
@@ -64,8 +66,8 @@ export const useGoogleSheets = () => {
         formattedData.channel = issueData.channel || '';
       }
 
-      console.log('Sending data to sheet:', targetSheet);
-      console.log('Formatted data being sent:', formattedData);
+      console.log('Final data being sent to Google Apps Script:', JSON.stringify(formattedData));
+      console.log('Sending POST request to:', config.webAppUrl);
 
       const response = await fetch(config.webAppUrl, {
         method: 'POST',
