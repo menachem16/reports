@@ -28,10 +28,22 @@ const Admin = () => {
   const [testResult, setTestResult] = useState<{success: boolean, message: string} | null>(null);
 
   useEffect(() => {
-    // Load saved config from localStorage
-    const savedConfig = localStorage.getItem('googleSheetsConfig');
-    if (savedConfig) {
-      setConfig(JSON.parse(savedConfig));
+    // Load config from env vars first, then localStorage as fallback
+    const envConfig = {
+      spreadsheetId: import.meta.env.VITE_GOOGLE_SHEETS_SPREADSHEET_ID || '',
+      webAppUrl: import.meta.env.VITE_GOOGLE_SHEETS_WEB_APP_URL || '',
+      apiKey: import.meta.env.VITE_GOOGLE_SHEETS_API_KEY || '',
+      sheetName: import.meta.env.VITE_GOOGLE_SHEETS_SHEET_NAME || 'sheets'
+    };
+
+    if (envConfig.spreadsheetId && envConfig.webAppUrl) {
+      setConfig(envConfig);
+    } else {
+      // Fallback to localStorage
+      const savedConfig = localStorage.getItem('googleSheetsConfig');
+      if (savedConfig) {
+        setConfig(JSON.parse(savedConfig));
+      }
     }
   }, []);
 
@@ -121,7 +133,7 @@ const Admin = () => {
           <Shield className="h-4 w-4" />
           <AlertDescription className="text-right">
             <strong>אזהרת אבטחה:</strong> מפתחות API רגישים! ודא שהגיליון מוגדר כציבורי לכתיבה או השתמש ב-Service Account.
-            המפתחות נשמרים במחשב שלך בלבד (localStorage).
+            המערכת קוראת קודם מ-Environment Variables של Netlify, ואם לא נמצאים - מ-localStorage.
           </AlertDescription>
         </Alert>
 
