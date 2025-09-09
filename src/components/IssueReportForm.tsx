@@ -197,6 +197,20 @@ export const IssueReportForm: React.FC = () => {
       
       <CardContent className="space-y-6">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Email - Fixed at top */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-foreground text-right">
+              כתובת מייל (לעדכונים על סטטוס הדיווח)
+            </label>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              placeholder="הכנס כתובת מייל..."
+              className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-right"
+            />
+          </div>
+
           {/* Content Type Selection */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-foreground text-right">
@@ -210,20 +224,6 @@ export const IssueReportForm: React.FC = () => {
                 handleContentTypeChange(contentType);
               }}
               placeholder="בחר סוג תוכן"
-            />
-          </div>
-
-          {/* Email - Fixed at top */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-foreground text-right">
-              כתובת מייל (לעדכונים על סטטוס הדיווח)
-            </label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              placeholder="הכנס כתובת מייל..."
-              className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-right"
             />
           </div>
 
