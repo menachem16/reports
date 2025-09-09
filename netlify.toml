@@ -2,6 +2,12 @@
   publish = "dist"
   command = "npm run build"
 
+[build.environment]
+  VITE_GOOGLE_SHEETS_SPREADSHEET_ID = "YOUR_SPREADSHEET_ID_HERE"
+  VITE_GOOGLE_SHEETS_WEB_APP_URL = "YOUR_WEB_APP_URL_HERE"
+  VITE_GOOGLE_SHEETS_API_KEY = "YOUR_API_KEY_HERE"
+  VITE_GOOGLE_SHEETS_SHEET_NAME = "sheets"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
