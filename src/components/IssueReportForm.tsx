@@ -22,12 +22,14 @@ interface FormData {
   country?: string;
   channel?: string;
   issueType: string;
+  email: string;
 }
 
 export const IssueReportForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     contentType: '',
-    issueType: ''
+    issueType: '',
+    email: ''
   });
   
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -61,7 +63,8 @@ export const IssueReportForm: React.FC = () => {
   const handleContentTypeChange = (contentType: string) => {
     setFormData({
       contentType,
-      issueType: formData.issueType
+      issueType: formData.issueType,
+      email: formData.email
     });
   };
 
@@ -82,6 +85,7 @@ export const IssueReportForm: React.FC = () => {
       country: formData.country,
       channel: formData.channel,
       issueType: formData.issueType,
+      email: formData.email,
       timestamp: new Date().toLocaleString('he-IL')
     };
 
@@ -95,7 +99,8 @@ export const IssueReportForm: React.FC = () => {
         setIsSubmitted(false);
         setFormData({
           contentType: '',
-          issueType: ''
+          issueType: '',
+          email: ''
         });
       }, 3000);
     }
@@ -134,7 +139,7 @@ export const IssueReportForm: React.FC = () => {
   const getChannelOptions = () => formData.country && channelsData ? channelsData[formData.country] || [] : [];
 
   const isFormValid = () => {
-    if (!formData.contentType || !formData.issueType) return false;
+    if (!formData.contentType || !formData.issueType || !formData.email) return false;
     
     switch (formData.contentType) {
       case 'series':
@@ -314,6 +319,20 @@ export const IssueReportForm: React.FC = () => {
               )}
             </>
           )}
+
+          {/* Email */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-foreground text-right">
+              כתובת מייל (לעדכונים על סטטוס הדיווח)
+            </label>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              placeholder="הכנס כתובת מייל..."
+              className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-right"
+            />
+          </div>
 
           {/* Issue Type Selection */}
           <div className="space-y-2">

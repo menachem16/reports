@@ -18,6 +18,7 @@ interface IssueData {
   country?: string;
   channel?: string;
   issueType: string;
+  email: string;
   timestamp: string;
 }
 
@@ -50,6 +51,7 @@ export const useGoogleSheets = () => {
       let formattedData: any = {
         contentType: issueData.contentType,
         issueType: issueData.issueType,
+        email: issueData.email,
         timestamp: new Date().toLocaleString('he-IL'),
         targetSheet: targetSheet
       };

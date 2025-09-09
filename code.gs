@@ -29,11 +29,11 @@ function doPost(e) {
       
       // הוסף כותרות בהתאם לסוג התוכן
       if (sheetName === 'סדרות') {
-        sheet.getRange(1, 1, 1, 6).setValues([['סוג תוכן', 'סדרה', 'עונה', 'פרק', 'סוג תקלה', 'תאריך']]);
+        sheet.getRange(1, 1, 1, 7).setValues([['סוג תוכן', 'סדרה', 'עונה', 'פרק', 'סוג תקלה', 'תאריך', 'מייל']]);
       } else if (sheetName === 'סרט') {
-        sheet.getRange(1, 1, 1, 5).setValues([['סוג תוכן', 'קטגוריה', 'סרט', 'סוג תקלה', 'תאריך']]);
+        sheet.getRange(1, 1, 1, 6).setValues([['סוג תוכן', 'קטגוריה', 'סרט', 'סוג תקלה', 'תאריך', 'מייל']]);
       } else if (sheetName === 'ערוצים') {
-        sheet.getRange(1, 1, 1, 5).setValues([['סוג תוכן', 'מדינה', 'ערוץ', 'סוג תקלה', 'תאריך']]);
+        sheet.getRange(1, 1, 1, 6).setValues([['סוג תוכן', 'מדינה', 'ערוץ', 'סוג תקלה', 'תאריך', 'מייל']]);
       }
     }
     
@@ -47,7 +47,8 @@ function doPost(e) {
         data.season || '',
         data.episode || '',
         data.issueType,
-        data.timestamp
+        data.timestamp,
+        data.email || ''
       ];
     } else if (sheetName === 'סרט') {
       rowData = [
@@ -55,7 +56,8 @@ function doPost(e) {
         data.category || '',
         data.movie || '',
         data.issueType,
-        data.timestamp
+        data.timestamp,
+        data.email || ''
       ];
     } else if (sheetName === 'ערוצים') {
       rowData = [
@@ -63,7 +65,8 @@ function doPost(e) {
         data.country || '',
         data.channel || '',
         data.issueType,
-        data.timestamp
+        data.timestamp,
+        data.email || ''
       ];
     }
     

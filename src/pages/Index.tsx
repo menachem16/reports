@@ -19,9 +19,14 @@ const Index = () => {
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4 animate-float">
               מרכז דיווח תקלות
             </h1>
-            <p className="text-lg text-muted-foreground max-w-md mx-auto">
+            <p className="text-lg text-muted-foreground max-w-md mx-auto mb-4">
               דווח על תקלות בסדרות, סרטים וערוצים בצורה מהירה ויעילה
             </p>
+            <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 max-w-lg mx-auto">
+              <p className="text-primary font-medium text-sm">
+                ⭐ הדיווח שלכם חשוב לנו מאוד! הוא עוזר לנו לשפר את השירות ולטפל בתקלות במהירות המרבית
+              </p>
+            </div>
           </div>
           
           <IssueReportForm />
