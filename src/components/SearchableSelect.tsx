@@ -83,6 +83,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
             <div className="relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
+                id="search-input"
                 ref={searchRef}
                 type="text"
                 value={searchTerm}
