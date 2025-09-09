@@ -199,10 +199,12 @@ export const IssueReportForm: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email - Fixed at top */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-foreground text-right">
+            <label htmlFor="email" className="block text-sm font-medium text-foreground text-right">
               כתובת מייל (לעדכונים על סטטוס הדיווח)
             </label>
             <input
+              id="email"
+              name="email"
               type="email"
               value={formData.email}
               onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
