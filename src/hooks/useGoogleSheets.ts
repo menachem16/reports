@@ -27,6 +27,19 @@ export const useGoogleSheets = () => {
   const [error, setError] = useState<string | null>(null);
 
   const getConfig = (): GoogleSheetsConfig | null => {
+    // Read from environment variables first
+    const envConfig: GoogleSheetsConfig = {
+      spreadsheetId: import.meta.env.VITE_GOOGLE_SHEETS_SPREADSHEET_ID || '',
+      webAppUrl: import.meta.env.VITE_GOOGLE_SHEETS_WEB_APP_URL || '',
+      apiKey: import.meta.env.VITE_GOOGLE_SHEETS_API_KEY || '',
+      sheetName: import.meta.env.VITE_GOOGLE_SHEETS_SHEET_NAME || 'sheets',
+    };
+
+    // If env vars are set, use them, else fallback to localStorage
+    if (envConfig.spreadsheetId && envConfig.webAppUrl) {
+      return envConfig;
+    }
+
     const savedConfig = localStorage.getItem('googleSheetsConfig');
     return savedConfig ? JSON.parse(savedConfig) : null;
   };
