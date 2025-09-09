@@ -226,18 +226,6 @@ export const IssueReportForm: React.FC = () => {
               className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-right"
             />
           </div>
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-foreground text-right">
-              כתובת מייל (לעדכונים על סטטוס הדיווח)
-            </label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              placeholder="הכנס כתובת מייל..."
-              className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-right"
-            />
-          </div>
 
           {/* Series Selection */}
           {formData.contentType === 'series' && (
